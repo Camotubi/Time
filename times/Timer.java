@@ -1,6 +1,8 @@
 package times;
 
 public class Timer {
+	private static final class Lock { }
+	private final Object lock = new Lock();
 	public long remainingTimeMillis = 0;
 	
 	private Thread t1 = new Thread(new Runnable()
@@ -29,7 +31,11 @@ public class Timer {
 	public void pause()
 	{
 		try {
-			t1.wait();
+			synchronized (lock) 
+			{
+			        lock.wait();
+			    }
+
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,7 +44,10 @@ public class Timer {
 	
 	public void resume()
 	{
-		t1.notify();
+		synchronized (lock) 
+		{
+		        lock.notify();
+		    }
 	}
 	
 	public void reset(long timeMillis)
